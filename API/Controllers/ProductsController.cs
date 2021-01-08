@@ -14,16 +14,25 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ProductsController: ControllerBase
     {
-        private readonly IProductRepository _repo;
-        public ProductsController(IProductRepository repo)
+        private readonly IGenericRepository<Product> _productRepo;
+        private readonly IGenericRepository<ProductBrand> _brandRepo;
+        private readonly IGenericRepository<ProductType> _productTpe;
+
+
+
+        public ProductsController(IGenericRepository<Product> productRepo,
+         IGenericRepository<ProductBrand> brandRepo,
+          IGenericRepository<ProductType> productType)
         {
-            _repo = repo;
+            _productRepo = productRepo;
+            _brandRepo = brandRepo;
+            _productTpe = productType;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var products = await _repo.GetProductAsync();
+            var products = await _productRepo.ListAllAsync();
             
             return Ok(products);
         }  
@@ -31,19 +40,24 @@ namespace API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProdutc(int id){
-            return await _repo.GetProductByIdAsync(id);  
+        public async Task<ActionResult<Product>> GetProdutc(int id)
+        {
+
+            return await _productRepo.GetByIdAsync(id);  
         }
 
         [HttpGet("brands")]
-        public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands(){
-            return Ok(await _repo.GetProductBrandsAsync());
+        public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
+        {
+            return Ok(await _brandRepo.ListAllAsync());
         }
 
 
          [HttpGet("types")]
-        public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes(){
-            return Ok(await _repo.GetProductTypesAsync());
+        public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
+        {
+
+            return Ok(await _productTpe.ListAllAsync());
         }
 
     }
